@@ -6,6 +6,7 @@ export interface WheelRig {
   rollPivot: THREE.Object3D;
   steerPivot?: THREE.Object3D;
   radius: number;
+  rollAxis?: "x" | "z";
 }
 
 export interface FallbackCarResult {

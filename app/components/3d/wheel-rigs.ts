@@ -2,19 +2,20 @@ import * as THREE from "three";
 import type { WheelRig } from "./types";
 
 export const WHEEL_CONFIGS = [
-  { id: "rear_right", wheelNode: "Group13", discNode: "Group32", isFront: false },
-  { id: "front_right", wheelNode: "Group17", discNode: "Group31", isFront: true },
-  { id: "rear_left", wheelNode: "Group21", discNode: "Group29", isFront: false },
-  { id: "front_left", wheelNode: "Group25", discNode: "Group30", isFront: true },
+  // Fairheaven Low-Poly Car wheel nodes
+  { id: "front_left", wheelNode: "Fairheaven_LT80_WheelHubcaps_FL", isFront: true, rollAxis: "z" as const },
+  { id: "front_right", wheelNode: "Fairheaven_LT80_WheelHubcaps_FR", isFront: true, rollAxis: "z" as const },
+  { id: "rear_left", wheelNode: "Fairheaven_LT80_WheelHubcaps_RL", isFront: false, rollAxis: "z" as const },
+  { id: "rear_right", wheelNode: "Fairheaven_LT80_WheelHubcaps_RR", isFront: false, rollAxis: "z" as const },
+  // Nissan Sentra fallback wheel nodes
+  { id: "front_left_nissan", wheelNode: "Group25", isFront: true, rollAxis: "x" as const },
+  { id: "front_right_nissan", wheelNode: "Group17", isFront: true, rollAxis: "x" as const },
+  { id: "rear_left_nissan", wheelNode: "Group21", isFront: false, rollAxis: "x" as const },
+  { id: "rear_right_nissan", wheelNode: "Group13", isFront: false, rollAxis: "x" as const },
 ] as const;
 
 /**
- * Builds centered rotation pivots for all 4 wheel assemblies + brake rotors.
- *
- * In the raw GLB asset, wheel nodes have their local origin at (0,0,0) with
- * geometry offset in space. By centering the geometry inside dedicated
- * steerPivot and rollPivot containers, each wheel spins perfectly on its axle
- * with zero wobble, zero clipping, and natural front steering.
+ * Builds centered rotation pivots for all 4 wheel assemblies.
  */
 export function setupWheelRigs(
   model: THREE.Object3D,
@@ -24,7 +25,6 @@ export function setupWheelRigs(
 
   WHEEL_CONFIGS.forEach((cfg) => {
     const wheelObj = model.getObjectByName(cfg.wheelNode);
-    const discObj = model.getObjectByName(cfg.discNode);
     if (!wheelObj) return;
 
     const parent = wheelObj.parent || model;
@@ -34,12 +34,12 @@ export function setupWheelRigs(
     const wCenter = wBox.getCenter(new THREE.Vector3());
     const wSize = wBox.getSize(new THREE.Vector3());
     const measuredRadius =
-      wSize.y / 2 > 0.05 ? wSize.y / 2 : 0.3 * scale;
+      wSize.y / 2 > 0.05 ? wSize.y / 2 : 0.32 * scale;
 
     const parentLocalCenter = wCenter.clone();
     parent.worldToLocal(parentLocalCenter);
 
-    // Steer pivot handles front wheel yaw steering
+    // Steer pivot handles front wheel yaw steering (Y-axis)
     const steerPivot = new THREE.Group();
     steerPivot.name = `${cfg.id}_steer`;
     steerPivot.position.copy(parentLocalCenter);
@@ -53,17 +53,13 @@ export function setupWheelRigs(
     wheelObj.position.sub(parentLocalCenter);
     rollPivot.add(wheelObj);
 
-    if (discObj) {
-      discObj.position.sub(parentLocalCenter);
-      rollPivot.add(discObj);
-    }
-
     parent.add(steerPivot);
 
     loadedRigs.push({
       rollPivot,
       steerPivot: cfg.isFront ? steerPivot : undefined,
       radius: measuredRadius,
+      rollAxis: cfg.rollAxis,
     });
   });
 

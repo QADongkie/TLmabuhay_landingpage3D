@@ -5,26 +5,32 @@ export function FinaleSection() {
   return (
     <section
       className="hero finale-section narrative-panel"
-      id="arrival"
+      id="destination"
       aria-labelledby="hero-title"
     >
       <div className="hero-copy">
+        <div className="section-kicker">
+          <span>STAGE 05</span>
+          <b>YOUR DESTINATION</b>
+        </div>
         <p className="eyebrow">
           <span /> {SITE.brand.fullName}
         </p>
         <h2 id="hero-title">
-          <span>ROAD TO</span>
-          <em>READY.</em>
+          <span>YOUR DEFENSIVE</span>
+          <em>DRIVING ADVOCATE.</em>
         </h2>
-        <p className="final-motto">{SITE.brand.tagline}.</p>
+        <p className="final-motto">
+          Master the road with safety, precision, and confidence.
+        </p>
         <div className="hero-actions">
           <a className="primary-button" href={SITE.links.enroll}>
             <span className="button-car">●</span>
-            Start driving safer
+            Start Your Journey
             <ArrowIcon />
           </a>
           <a className="text-link" href={SITE.links.branches}>
-            Find a branch <ArrowIcon />
+            Find Nearest Branch <ArrowIcon />
           </a>
         </div>
       </div>
